@@ -1,26 +1,38 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import {DynamicPage} from 'react-json-page';
+import { Link } from "react-router-dom";
 import './App.css';
 
 class App extends Component {
+  constructor(props){
+    super(props)
+    this.state = { jsonPage: {"type":"h4","value":"Carregando..."} };
+
+    this.loadJson(this.props.location);
+  }
+  componentDidUpdate(prevProps) {
+    if (this.props.location && (this.props.location.pathname !== prevProps.location.pathname || this.props.location.search !== prevProps.location.search)) {
+      this.loadJson(this.props.location);
+    }
+  }
+
+  loadJson(location){
+    fetch("http://localhost:56753/v1/Page", { method: 'POST', headers:{"Content-Type":"application/json"}, body: JSON.stringify(location) })
+          .then(response => response.json())
+          .then(data => {
+            if(!data)
+              return;
+            this.setState({ jsonPage: data.data });
+          });
+  }
+
   render() {
-    console.log(this.props);
+    const Components = {
+      Link
+    };
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+          <DynamicPage form={this.state.jsonPage} customComponents={Components} />
       </div>
     );
   }

@@ -17,12 +17,13 @@ class App extends Component {
   }
 
   loadJson(location){
-    fetch("http://localhost:56753/v1/Page", { method: 'POST', headers:{"Content-Type":"application/json"}, body: JSON.stringify(location) })
+    fetch("http://localhost:49794/v1/Page", { method: 'POST', headers:{"Content-Type":"application/json"}, body: JSON.stringify(location) })
           .then(response => response.json())
           .then(data => {
             if(!data)
               return;
-            this.setState({ jsonPage: data.data });
+            this.setState({ jsonPage: data.data.body });
+            document.title = data.data.title;
           });
   }
 
